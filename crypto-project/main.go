@@ -8,6 +8,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"os"
 )
 
 func createHash(key string) string {
@@ -36,9 +38,23 @@ func decrypt(data []byte, passphrase string) []byte {
 
 }
 
+func encryptFile(filename string, data []byte, passphrase string) {
+	f, _ := os.Create(filename)
+	defer f.Close()
+	f.Write(encrypt(data, passphrase))
+}
+
+func decryptFile(filename string, passphrase string) []byte {
+	data, _ := ioutil.ReadFile(filename)
+	return decrypt(data, passphrase)
+}
+
 func main() {
 	ciphertext := encrypt([]byte("Hello World"), "password")
 	fmt.Println(string(ciphertext))
 	plaintext := decrypt(ciphertext, "password")
+	fmt.Println(string(plaintext))
+	encryptFile("example.txt", []byte("Hello World"), "password")
+	plaintext = decryptFile("example.txt", "password")
 	fmt.Println(string(plaintext))
 }
