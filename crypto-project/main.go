@@ -25,7 +25,20 @@ func encrypt(data []byte, passphrase string) []byte {
 	return ciphertext
 }
 
+func decrypt(data []byte, passphrase string) []byte {
+	key := []byte(createHash(passphrase))
+	block, _ := aes.NewCipher(key)
+	gcm, _ := cipher.NewGCM(block)
+	nonceSize := gcm.NonceSize()
+	nonce, ciphertext := data[:nonceSize], data[nonceSize:]
+	plaintext, _ := gcm.Open(nil, nonce, ciphertext, nil)
+	return plaintext
+
+}
+
 func main() {
 	ciphertext := encrypt([]byte("Hello World"), "password")
 	fmt.Println(string(ciphertext))
+	plaintext := decrypt(ciphertext, "password")
+	fmt.Println(string(plaintext))
 }
