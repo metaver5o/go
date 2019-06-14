@@ -3,19 +3,23 @@ package main
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/md5"
 	"crypto/rand"
-	"encoding/hex"
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 )
 
-func createHash(key string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(key))
-	return hex.EncodeToString(hasher.Sum(nil))
+// func createHash(key string) string {
+// 	hasher := md5.New()
+// 	hasher.Write([]byte(key))
+// 	return hex.EncodeToString(hasher.Sum(nil))
+// }
+
+func createHash(key string) []byte {
+	hash := sha256.Sum256([]byte(key))
+	return hash[:]
 }
 
 func encrypt(data []byte, passphrase string) []byte {
